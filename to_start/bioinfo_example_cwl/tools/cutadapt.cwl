@@ -4,6 +4,8 @@ id: cutadapt
 label: cutadapt
 doc: cutadapt removes adapter sequences from high-throughput sequencing reads.
 
+# This is an example with few parameters.
+
 baseCommand: cutadapt
       
 requirements:
@@ -18,16 +20,16 @@ hints:
 inputs:
 
 # General options
-  file-R1:
+  fileR1:
     type: File
     doc: File containing sequencing reads (forward or single-end reads).
     inputBinding:
-      position: 1
-  file-R2:
+      position: 30
+  fileR2:
     type: File?
     doc: File containing seuquencing reads (reverse, only paired-end reads).
     inputBinding:
-      position: 2
+      position: 32
   format:
     type: string?
     doc: |
@@ -54,12 +56,34 @@ inputs:
 
 
 outputs:
-  output-file-R1:
+  reads1_cutadapt:
+    type: File
+    outputBinding:
+      glob: $(inputs.fileR1.nameroot).cutadapt.fastq
+
+  reads2_cutadapt:
     type: File?
     outputBinding:
-      glob: $(inputs.output-R1)
+      glob: |
+        ${ if (inputs.fileR2 ) {
+             return inputs.fileR2.nameroot + '.cutadapt.fastq';
+           } else {
+             return null;
+           }
+         }
 
 arguments:
-  - valueFrom: $(inputs.file-R1.nameroot)
+  - valueFrom: $(inputs.fileR1.nameroot).cutadapt.fastq
     prefix: --output
-    position: 21
+    position: 20
+    
+  - valueFrom:  |
+      ${
+        if ( inputs.fileR2) {
+          return "-p" + inputs.fileR2.nameroot+'.cutadapt.fastq';
+        } else {
+          return null;
+        }
+      }
+    shellQuote: False 
+    position: 21    

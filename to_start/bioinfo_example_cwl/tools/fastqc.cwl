@@ -4,6 +4,7 @@ class: CommandLineTool
 
 # Download from https://github.com/common-workflow-language/workflows/blob/master/tools/fastqc.cwl
 # Remove Docker requirement, add SoftwareRequirement
+# This is an example with few parameters.
 
 hints:
   SoftwareRequirement:

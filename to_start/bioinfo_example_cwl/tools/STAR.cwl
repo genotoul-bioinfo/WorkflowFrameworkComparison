@@ -6,6 +6,8 @@ baseCommand: [STAR]
 
 doc: "STAR: Alignment"
 
+# This is an example with few parameters.
+
 hints:
    SoftwareRequirement:
     packages:
@@ -31,10 +33,10 @@ inputs:
       position: 1
       prefix: --readFilesIn
 
-  fastq2:
-    type: File
-    inputBinding:
-      position: 2
+#  fastq2:
+#    type: File
+#    inputBinding:
+#      position: 2
 
   twopassMode:
     type: string?
@@ -142,11 +144,9 @@ inputs:
 outputs:
 
   output:
-    type:
-      type: array
-      items: File
+    type: File
     outputBinding:
-      glob: "*.bam"
+      glob: "$(inputs.fastq1.nameroot)Aligned.*.out.bam"
 
 arguments:
   - valueFrom: $(inputs.index)
