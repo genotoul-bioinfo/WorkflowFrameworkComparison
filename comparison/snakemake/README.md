@@ -17,5 +17,5 @@ python3 doit être associé à une version de python > 3.5
 
 sous genotoul le 29/11
 
-virtualenv -p /usr/local/bioinfo/src/python/Python-3.6.1/bin/python3.6 .venv
+virtualenv -p /usr/local/bioinfo/src/python/Python-3.6.1/bin/python3.6 env
 
