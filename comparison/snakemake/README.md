@@ -2,13 +2,14 @@
 
 ## Installation steps :
 virtualenv -p python3 env
-
 source env/bin/activate
-
 pip3 install snakemake
 
 ## Remarques :
 Easy installation
+
+## Example: cufflinks:
+Semble fonctionner, mais on peut lancer que le "dry run": les fichiers input fournis sont vides
 
 ## Issues :
 
