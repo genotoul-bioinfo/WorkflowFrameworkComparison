@@ -1,28 +1,60 @@
 # Commande line to launch
-# snakemake -p fastqc/{sample_CD4,sample}_{R1,R2}_fastqc.html cutadapt/{sample_CD4,sample}.trim_{R1,R2}.fastq.gz
+# snakemake -p fastqc/{sample_CD4,sample}_R1_fastqc.html fastqc/{sample_CD4,sample}_R2_fastqc.html STAR_index/STAR_index.log STAR_map/{sample_CD4,sample}.bam
+
+
+
+
 
 # Note
 # 1 : snakemake créé les dossiers s'ils n'existent pas. Donc pour fastqc pas la peine de créer le dossier explicitement avant
 # 2 : obligation de préciser les fichiers de sortie soit dans le snkafile dans output, soit dans la ligne de commande snakemake (exemple utilisé)
 
 rule fastqc:
-    input:
-        "data/reads/{prefix}.fastq.gz"
-    output:
-        "fastqc/{prefix}_fastqc.html",
-        "fastqc/{prefix}_fastqc.zip"
-    shell:
-        "fastqc {input} -o fastqc"
+	input:
+		"data/reads/{sample}_R1.fastq.gz",
+		"data/reads/{sample}_R2.fastq.gz"
+	output:
+		"fastqc/{sample}_R1_fastqc.html",
+		"fastqc/{sample}_R2_fastqc.html",
+		"fastqc/{sample}_R1_fastqc.zip",
+		"fastqc/{sample}_R2_fastqc.zip"
+	shell:
+		"fastqc {input} -o fastqc"
 
 # Note
 # 3 : par défaut snakemake va remplace {input} par la concaténation des inputs en les séparant par un espace. Si cela ne correspond pas à la ligne de commande alors on peut nommer chacun des inputs. Idem output
 rule cutadapt:
 	input:
-		"data/reads/{prefix}_R1.fastq.gz",
-		"data/reads/{prefix}_R2.fastq.gz",
+		"data/reads/{sample}_R1.fastq.gz",
+		"data/reads/{sample}_R2.fastq.gz",
 	output:
-		out_r1 = "cutadapt/{prefix}.trim_R1.fastq.gz",
-		out_r2 = "cutadapt/{prefix}.trim_R2.fastq.gz"
+		out_r1 = "cutadapt/{sample}.trim_R1.fastq.gz",
+		out_r2 = "cutadapt/{sample}.trim_R2.fastq.gz",
+		log = "cutadapt/{sample}.log"
 	shell:
-		"cutadapt -o {output.out_r1} -p {output.out_r2} {input}"
+		"cutadapt -a AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC -A AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT -o {output.out_r1} -p {output.out_r2} {input} > {output.log}"
 	 
+rule Star_index:
+	input:
+		fasta = "data/reference/reference.fa",
+		gtf = "data/reference/reference.gtf"
+	output:
+		"STAR_index/STAR_index.log"
+	shell:
+		"STAR --runMode genomeGenerate --genomeDir STAR_index --genomeFastaFiles {input.fasta} --outFileNamePrefix STAR_index/genome --sjdbOverhang 99 --sjdbGTFfile {input.gtf} > {output}"
+
+
+# Note
+# 4 : on peut définir un wildcards dans input et ouput. Pour l'utiliser dans shell alors il faut utiliser la syntaxe {wildcards.WILDCARDNAME}
+# 5 : pour écrire plusieurs lignes de commande shell : utiliser les triples double quote
+rule Star_mapping:
+	input:
+		r1 = "cutadapt/{sample}.trim_R1.fastq.gz", 
+		r2 = "cutadapt/{sample}.trim_R2.fastq.gz",
+		idx_log = "STAR_index/STAR_index.log"
+	output:
+		"STAR_map/{sample}.bam"
+	shell:
+		"""STAR --runThreadN 8 --genomeDir STAR_index/genome --readFilesIn {input} --readFilesCommand zcat --limitBAMsortRAM 16000000000 --outFileNamePrefix STAR_map/{wildcards.sample} --outSAMtype BAM SortedByCoordinate --outSAMstrandField None --outSAMunmapped Within --outSAMattrIHstart 0 --outFilterType BySJout   --outFilterIntronMotifs RemoveNoncanonical --alignSoftClipAtReferenceEnds Yes
+		samtools view -Sh {wildcards.sample}_Aligned.out.sam -bo {output}
+		"""
