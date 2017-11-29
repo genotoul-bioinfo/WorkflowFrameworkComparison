@@ -12,7 +12,7 @@ ADAPT_2 = "AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT"
 
 rule all:
     input:
-        expand("fastqc_{sample}/{sample}_R1_fastqc.zip", sample=SAMPLES),
+        expand("fastqc/{sample}_R1_fastqc.zip", sample=SAMPLES),
         expand("cutadapt/{sample}_R1.fastq.gz", sample=SAMPLES),
         expand("map/{sample}_Aligned.sortedByCoord.out.bam", sample=SAMPLES)
 
@@ -22,10 +22,9 @@ rule fastqc:
         r1 = os.path.join(READS_DIR, "{sample}_R1.fastq.gz"),
         r2 = os.path.join(READS_DIR, "{sample}_R2.fastq.gz")
     output:
-        "fastqc_{sample}/{sample}_R1_fastqc.zip",
-        dir = "fastqc_{sample}"
+        "fastqc/{sample}_R1_fastqc.zip"
     shell:
-        "fastqc -o {output.dir} {input.r1} {input.r2}"
+        "fastqc -o fastqc {input.r1} {input.r2}"
 
 
 rule cutadapt:
