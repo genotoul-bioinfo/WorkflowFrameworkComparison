@@ -1,0 +1,7 @@
+__default__:
+  mem: "4G"
+  cpu: 1
+
+index:
+  mem: "4G"
+  cpu: 4
