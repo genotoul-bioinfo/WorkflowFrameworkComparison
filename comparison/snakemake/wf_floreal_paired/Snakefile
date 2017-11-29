@@ -6,10 +6,15 @@ READS_DIR = "data/reads"
 
 SAMPLES = ["sample", "sample_CD4"]
 
+ADAPT_1 = "AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC"
+ADAPT_2 = "AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT"
+
 
 rule all:
     input:
-        expand("fastqc_{sample}/{sample}_R1_fastqc.zip", sample=SAMPLES)
+        expand("fastqc_{sample}/{sample}_R1_fastqc.zip", sample=SAMPLES),
+        expand("cutadapt/{sample}_R1.fastq.gz", sample=SAMPLES),
+        expand("map/{sample}_Aligned.sortedByCoord.out.bam", sample=SAMPLES)
 
 
 rule fastqc:
@@ -21,3 +26,41 @@ rule fastqc:
         dir = "fastqc_{sample}"
     shell:
         "fastqc -o {output.dir} {input.r1} {input.r2}"
+
+
+rule cutadapt:
+    input:
+        r1 = os.path.join(READS_DIR, "{sample}_R1.fastq.gz"),
+        r2 = os.path.join(READS_DIR, "{sample}_R2.fastq.gz")
+    output:
+        r1 = os.path.join("cutadapt", "{sample}_R1.fastq.gz"),
+        r2 = os.path.join("cutadapt", "{sample}_R2.fastq.gz")
+    shell:
+        "cutadapt -a {ADAPT_1} -A {ADAPT_2} -o {output.r1} -p {output.r2} {input}"
+
+rule index:
+    input:
+        ref = REFERENCE
+    output:
+        "star_index/Genome",
+        dir = "star_index"
+    threads: 4
+    shell:
+        """
+        STAR --runThreadN 4 --runMode genomeGenerate --genomeDir {output.dir} --genomeFastaFiles {input.ref} \
+        --outFileNamePrefix {output.dir}/
+        """
+
+rule map:
+    input:
+        ref = "star_index",
+        r1 = os.path.join("cutadapt", "{sample}_R1.fastq.gz"),
+        r2 = os.path.join("cutadapt", "{sample}_R2.fastq.gz")
+    output:
+        bam = os.path.join("map", "{sample}_Aligned.sortedByCoord.out.bam")
+    threads: 4
+    shell:
+        """
+        STAR --genomeDir {input.ref} --readFilesIn {input.r1} {input.r2} --readFilesCommand zcat \
+        --outFileNamePrefix map/{wildcards.sample}_ --runThreadN 4 --outSAMtype BAM SortedByCoordinate
+        """

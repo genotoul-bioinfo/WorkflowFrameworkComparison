@@ -1,1 +1,6 @@
 .snakemake
+cutadapt
+fastqc_sample
+fastqc_sample_CD4
+map
+star_index
