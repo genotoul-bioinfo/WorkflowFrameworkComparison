@@ -9,6 +9,8 @@ SAMPLES = config['samples']
 ADAPT_1 = config['adapt1']
 ADAPT_2 = config['adapt2']
 
+localrules: all
+
 
 rule all:
     input:
