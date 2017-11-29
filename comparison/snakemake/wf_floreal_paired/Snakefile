@@ -1,13 +1,13 @@
 import os
 
-REFERENCE = "data/reference/reference.fa"
+REFERENCE = config['reference']
 
-READS_DIR = "data/reads"
+READS_DIR = config['reads_dir']
 
-SAMPLES = ["sample", "sample_CD4"]
+SAMPLES = config['samples']
 
-ADAPT_1 = "AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC"
-ADAPT_2 = "AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT"
+ADAPT_1 = config['adapt1']
+ADAPT_2 = config['adapt2']
 
 
 rule all:

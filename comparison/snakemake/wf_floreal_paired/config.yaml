@@ -1,0 +1,7 @@
+reference: "data/reference/reference.fa"
+reads_dir: "data/reads"
+samples:
+  - "sample"
+  - "sample_CD4"
+adapt1: "AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC"
+adapt2: "AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT"
