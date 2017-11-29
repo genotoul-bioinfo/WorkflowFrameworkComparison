@@ -5,3 +5,7 @@ __default__:
 index:
   mem: "4G"
   cpu: 4
+
+map:
+  mem: "4G"
+  cpu: 4
