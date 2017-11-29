@@ -1,0 +1,28 @@
+# Commande line to launch
+# snakemake -p fastqc/{sample_CD4,sample}_{R1,R2}_fastqc.html cutadapt/{sample_CD4,sample}.trim_{R1,R2}.fastq.gz
+
+# Note
+# 1 : snakemake créé les dossiers s'ils n'existent pas. Donc pour fastqc pas la peine de créer le dossier explicitement avant
+# 2 : obligation de préciser les fichiers de sortie soit dans le snkafile dans output, soit dans la ligne de commande snakemake (exemple utilisé)
+
+rule fastqc:
+    input:
+        "data/reads/{prefix}.fastq.gz"
+    output:
+        "fastqc/{prefix}_fastqc.html",
+        "fastqc/{prefix}_fastqc.zip"
+    shell:
+        "fastqc {input} -o fastqc"
+
+# Note
+# 3 : par défaut snakemake va remplace {input} par la concaténation des inputs en les séparant par un espace. Si cela ne correspond pas à la ligne de commande alors on peut nommer chacun des inputs. Idem output
+rule cutadapt:
+	input:
+		"data/reads/{prefix}_R1.fastq.gz",
+		"data/reads/{prefix}_R2.fastq.gz",
+	output:
+		out_r1 = "cutadapt/{prefix}.trim_R1.fastq.gz",
+		out_r2 = "cutadapt/{prefix}.trim_R2.fastq.gz"
+	shell:
+		"cutadapt -o {output.out_r1} -p {output.out_r2} {input}"
+	 
