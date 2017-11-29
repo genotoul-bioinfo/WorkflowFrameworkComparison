@@ -1,0 +1,55 @@
+Building DAG of jobs...
+
+rule assembly:
+    input: mapped/104.bam
+    output: assembly/104/transcripts.gtf, assembly/104
+    jobid: 7
+    wildcards: sample=104
+
+
+rule assembly:
+    input: mapped/103.bam
+    output: assembly/103/transcripts.gtf, assembly/103
+    jobid: 5
+    wildcards: sample=103
+
+
+rule assembly:
+    input: mapped/102.bam
+    output: assembly/102/transcripts.gtf, assembly/102
+    jobid: 6
+    wildcards: sample=102
+
+
+rule assembly:
+    input: mapped/101.bam
+    output: assembly/101/transcripts.gtf, assembly/101
+    jobid: 8
+    wildcards: sample=101
+
+
+rule compose_merge:
+    input: assembly/101/transcripts.gtf, assembly/102/transcripts.gtf, assembly/103/transcripts.gtf, assembly/104/transcripts.gtf
+    output: assembly/assemblies.txt
+    jobid: 4
+
+
+rule merge_assemblies:
+    input: assembly/assemblies.txt
+    output: assembly/merged/merged.gtf, assembly/merged
+    jobid: 3
+
+
+rule diffexp:
+    input: mapped/101.bam, mapped/102.bam, mapped/103.bam, mapped/104.bam, assembly/merged/merged.gtf
+    output: diffexp/gene_exp.diff, diffexp/isoform_exp.diff
+    jobid: 1
+
+
+rule compare_assemblies:
+    input: assembly/merged/merged.gtf
+    output: assembly/comparison/all.stats, assembly/comparison
+    jobid: 2
+
+RuleException in line 54 of /work/fcabanettes/hackaton/WorkflowFrameworkComparison/comparison/snakemake/example_cufflinks/Snakefile:
+'OutputFiles' object has no attribute 'dir'

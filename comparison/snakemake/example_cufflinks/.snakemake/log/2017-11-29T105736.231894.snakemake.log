@@ -1,0 +1,34 @@
+Building DAG of jobs...
+Provided cores: 1
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	1	all
+	4	assembly
+	1	compare_assemblies
+	1	compose_merge
+	1	diffexp
+	1	merge_assemblies
+	9
+
+rule assembly:
+    input: mapped/104.bam
+    output: assembly/104/transcripts.gtf, assembly/104
+    jobid: 5
+    wildcards: sample=104
+
+Error in rule assembly:
+    jobid: 5
+    output: assembly/104/transcripts.gtf, assembly/104
+
+RuleException:
+CalledProcessError in line 32 of /work/fcabanettes/hackaton/WorkflowFrameworkComparison/comparison/snakemake/example_cufflinks/Snakefile:
+Command ' set -euo pipefail;  cufflinks --num-threads 1 -o assembly/104 --frag-bias-correct hg19.fa mapped/104.bam ' returned non-zero exit status 1.
+  File "/work/fcabanettes/hackaton/WorkflowFrameworkComparison/comparison/snakemake/example_cufflinks/Snakefile", line 32, in __rule_assembly
+  File "/usr/local/bioinfo/src/python/Python-3.6.1/lib/python3.6/concurrent/futures/thread.py", line 55, in run
+Removing output files of failed job assembly since they might be corrupted:
+assembly/104/transcripts.gtf, assembly/104
+Skipped removing non-empty directory assembly/104
+Will exit after finishing currently running jobs.
+Exiting because a job execution failed. Look above for error message
+Complete log: .snakemake/log/2017-11-29T105736.231894.snakemake.log

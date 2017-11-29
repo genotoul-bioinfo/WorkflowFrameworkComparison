@@ -1,0 +1,23 @@
+import os
+
+REFERENCE = "data/reference/reference.fa"
+
+READS_DIR = "data/reads"
+
+SAMPLES = ["sample", "sample_CD4"]
+
+
+rule all:
+    input:
+        expand("fastqc_{sample}/{sample}_R1_fastqc.zip", sample=SAMPLES)
+
+
+rule fastqc:
+    input:
+        r1 = os.path.join(READS_DIR, "{sample}_R1.fastq.gz"),
+        r2 = os.path.join(READS_DIR, "{sample}_R2.fastq.gz")
+    output:
+        "fastqc_{sample}/{sample}_R1_fastqc.zip",
+        dir = "fastqc_{sample}"
+    shell:
+        "fastqc -o {output.dir} {input.r1} {input.r2}"
