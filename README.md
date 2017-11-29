@@ -5,7 +5,7 @@ Here is the repository for hackathon occurs at INRA Toulouse on the 29 and 30 of
 ## People implied (INRA):
  * Estelle Ancellet, 
  * Philippe Bardou, 
- * Floréal Cabanette, 
+ * Floréal Cabanettes, 
  * Cédric Cabau, 
  * Sébastien Carrere, 
  * Ludovic Legrand, 
