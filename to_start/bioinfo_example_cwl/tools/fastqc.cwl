@@ -11,7 +11,11 @@ hints:
     packages:
       fastqc:
         version: [ "0.11.2" ]
-        
+
+requirements:
+  - class: ResourceRequirement
+    coresMin: 6
+    ramMin: 80000       
 inputs:
   fastqFile:
     type: File # No reason to accept multiple files as no overall report is generated
