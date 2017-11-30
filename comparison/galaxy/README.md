@@ -54,15 +54,71 @@ Starting server in PID 5769.
 serving on http://127.0.0.1:8080
 ```
 
+### Test CWL tools in Galaxy
 
 
-CWL test tools can be seen in the tool panel.
+CWL test tools can be seen in the tool panel. ???
+
+
+Question : where are CWL tools ?
+
+
+$ find . -type f -name "*cwl*"
+./doc/source/lib/galaxy.tools.cwl.rst
+./lib/galaxy/tools/expressions/cwlNodeEngine.js
+./lib/galaxy/tools/parser/cwl.py
+./lib/galaxy/tools/parser/cwl.pyc
+./lib/galaxy/tools/cwl/cwltool_deps.py
+./lib/galaxy/tools/cwl/cwltool_deps.pyc
+./.git/logs/refs/heads/cwl-1.0
+./.git/refs/heads/cwl-1.0
+
+
+$ ls test/unit/tools/cwl_tools/v1.0
+
 
 
 [CWL test tools on Galaxy tool panel](images/cwltools.jpg)
 
+### Tests in command line
+
+* Test 1:
+
+```
+cd galaxy/
+$ ./run_tests.sh -api test/api/test_tools_cwl.py
+```
+
+Tests results:
+
+```
+galaxy.jobs.handler INFO 2017-11-30 12:05:15,880 job handler stop queue stopped
+Testing complete. HTML report is in "./run_api_tests.html".
+```
+run_api_tests.html file is empty !
 
 
+* Test 2:
+
+```
+cd galaxy/
+./run_tests.sh -api test/api/test_workflows_cwl.py
+```
+
+Result : Testing complete. HTML report is in "./run_api_tests.html".
+
+[Run API tests 2](images/run_api_tests.png)
+
+* Test 3
+
+```
+cd galaxy/
+./run_tests.sh -api test/api/test_cwl_conformance_v1_0.py
+```
+
+Result : Testing complete. HTML report is in "./run_api_tests.html".
+
+[Run API tests 3](images/test3.png)
 
 ## Issues :
 
