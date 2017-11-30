@@ -6,6 +6,10 @@ index:
   mem: "4G"
   cpu: 4
 
-map:
+map_pe:
+  mem: "4G"
+  cpu: 4
+
+map_se:
   mem: "4G"
   cpu: 4
