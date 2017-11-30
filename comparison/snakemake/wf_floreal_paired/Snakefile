@@ -4,7 +4,8 @@ REFERENCE = config['reference']
 
 READS_DIR = config['reads_dir']
 
-SAMPLES = config['samples']
+SAMPLES_PE = config['samples_pe'] if "samples_pe" in config else []
+SAMPLES_SE = config['samples_se'] if "samples_se" in config else []
 
 ADAPT_1 = config['adapt1']
 ADAPT_2 = config['adapt2']
@@ -14,28 +15,47 @@ localrules: all
 
 rule all:
     input:
-        expand("fastqc/{sample}_R1_fastqc.zip", sample=SAMPLES),
-        expand("cutadapt/{sample}_R1.fastq.gz", sample=SAMPLES),
-        expand("map/{sample}_Aligned.sortedByCoord.out.bam", sample=SAMPLES)
+        expand("fastqc_pe/{sample}_R1_fastqc.zip", sample=SAMPLES_PE),
+        expand("map/{sample}_Aligned.sortedByCoord.out.bam", sample=SAMPLES_PE),
+        expand("fastqc_se/{sample}_fastqc.zip", sample=SAMPLES_SE),
+        expand("map/{sample}_Aligned.sortedByCoord.out.bam", sample=SAMPLES_SE)
 
 
-rule fastqc:
+rule fastqc_pe:
     input:
         r1 = os.path.join(READS_DIR, "{sample}_R1.fastq.gz"),
         r2 = os.path.join(READS_DIR, "{sample}_R2.fastq.gz")
     output:
-        "fastqc/{sample}_R1_fastqc.zip"
+        "fastqc_pe/{sample}_R1_fastqc.zip"
     shell:
-        "fastqc -o fastqc {input.r1} {input.r2}"
+        "fastqc -o fastqc_pe {input.r1} {input.r2}"
 
 
-rule cutadapt:
+rule fastqc_se:
+    input:
+        r = os.path.join(READS_DIR, "{sample}.fastq.gz")
+    output:
+        "fastqc_se/{sample}_fastqc.zip"
+    shell:
+        "fastqc -o fastqc_se {input.r}"
+
+
+rule cutadapt_se:
+    input:
+        r = os.path.join(READS_DIR, "{sample}.fastq.gz")
+    output:
+        r = os.path.join("cutadapt_se", "{sample}.fastq.gz")
+    shell:
+        "cutadapt -a {ADAPT_1} -o {output.r} {input}"
+
+
+rule cutadapt_pe:
     input:
         r1 = os.path.join(READS_DIR, "{sample}_R1.fastq.gz"),
         r2 = os.path.join(READS_DIR, "{sample}_R2.fastq.gz")
     output:
-        r1 = os.path.join("cutadapt", "{sample}_R1.fastq.gz"),
-        r2 = os.path.join("cutadapt", "{sample}_R2.fastq.gz")
+        r1 = os.path.join("cutadapt_pe", "{sample}_R1.fastq.gz"),
+        r2 = os.path.join("cutadapt_pe", "{sample}_R2.fastq.gz")
     shell:
         "cutadapt -a {ADAPT_1} -A {ADAPT_2} -o {output.r1} -p {output.r2} {input}"
 
@@ -52,16 +72,29 @@ rule index:
         --outFileNamePrefix {output.dir}/
         """
 
-rule map:
+rule map_pe:
     input:
         ref = "star_index",
-        r1 = os.path.join("cutadapt", "{sample}_R1.fastq.gz"),
-        r2 = os.path.join("cutadapt", "{sample}_R2.fastq.gz")
+        r1 = os.path.join("cutadapt_pe", "{sample}_R1.fastq.gz"),
+        r2 = os.path.join("cutadapt_pe", "{sample}_R2.fastq.gz")
     output:
         bam = os.path.join("map", "{sample}_Aligned.sortedByCoord.out.bam")
     threads: 4
     shell:
         """
         STAR --genomeDir {input.ref} --readFilesIn {input.r1} {input.r2} --readFilesCommand zcat \
+        --outFileNamePrefix map/{wildcards.sample}_ --runThreadN 4 --outSAMtype BAM SortedByCoordinate
+        """
+
+rule map_se:
+    input:
+        ref = "star_index",
+        reads = os.path.join("cutadapt_se", "{sample}.fastq.gz")
+    output:
+        bam = os.path.join("map", "{sample}_Aligned.sortedByCoord.out.bam")
+    threads: 4
+    shell:
+        """
+        STAR --genomeDir {input.ref} --readFilesIn {input.reads} --readFilesCommand zcat \
         --outFileNamePrefix map/{wildcards.sample}_ --runThreadN 4 --outSAMtype BAM SortedByCoordinate
         """
