@@ -33,7 +33,7 @@ si on veut que ça soit utilisé par des "novices"
 - rule Fastqc :
   
   1) snakemake créé les dossiers s'ils n'existent pas. Donc pour fastqc pas la peine de créer le dossier explicitement avant
-	2) obligation de préciser les fichiers de sortie
+  2) obligation de préciser les fichiers de sortie
 		
 - rule Cutadapt:
 
@@ -45,6 +45,17 @@ si on veut que ça soit utilisé par des "novices"
   5) on peut définir un wildcards dans input et ouput. Pour l'utiliser dans shell alors il faut utiliser la syntaxe {wildcards.WILDCARDNAME}
   6) pour écrire plusieurs lignes de commande shell : utiliser les triples double quote
   7) on peut définir des priorités d'excecutions. Utile pour controler qui s'exécute avant qui et donc cumuler avec des options temp(), quels fichiers peut être supprimés pour gagner de la place
+
+- possibilité d'utiliser des données complexe :
+```
+samples:
+    - name: sample
+      read_1: data/reads/sample.fq.gz
+    - name: sample_CD4
+      read_1: data/reads/sample_CD4_R1.fastq.gz
+      read_2: data/reads/sample_CD4_R2.fastq.
+```
+Mais ensuite ce n'est pas très claire, de comment les utiliser dans le Snakefile. Floreal a proposé une solution. J'aimerais pouvoir parser directement dans la ligne input des règles. Dans tous les cas je n'ai pas trouvé de doc qui permettent de formaliser ce cas.
 
 ## Fin Jour 1
 Workflow terminé. Soumission cluster (DRMAA) fonctionelle.
