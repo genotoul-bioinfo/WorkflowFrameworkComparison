@@ -62,7 +62,7 @@ CWL test tools can be seen in the tool panel. ???
 
 Question : where are CWL tools ?
 
-
+```
 $ find . -type f -name "*cwl*"
 ./doc/source/lib/galaxy.tools.cwl.rst
 ./lib/galaxy/tools/expressions/cwlNodeEngine.js
@@ -75,7 +75,7 @@ $ find . -type f -name "*cwl*"
 
 
 $ ls test/unit/tools/cwl_tools/v1.0
-
+```
 
 
 [CWL test tools on Galaxy tool panel](images/cwltools.jpg)
@@ -121,6 +121,11 @@ Result : Testing complete. HTML report is in "./run_api_tests.html".
 [Run API tests 3](images/test3.png)
 
 ## Issues :
+
+
+* Impossible to find CWL tools in Galaxy tool menu.
+* Tests in command line : tests run, but no log files.
+
 
 
 ## Run CWL jobs in Docker containers (not tested yet)
