@@ -1,0 +1,15 @@
+__default__:
+  mem: "4G"
+  cpu: 1
+
+index:
+  mem: "4G"
+  cpu: 4
+
+map_pe:
+  mem: "4G"
+  cpu: 4
+
+map_se:
+  mem: "4G"
+  cpu: 4

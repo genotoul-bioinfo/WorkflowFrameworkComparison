@@ -1,0 +1,10 @@
+.snakemake
+cutadapt
+cutadapt_pe
+cutadapt_se
+fastqc
+fastqc_pe
+fastqc_se
+map
+star_index
+snakejob*

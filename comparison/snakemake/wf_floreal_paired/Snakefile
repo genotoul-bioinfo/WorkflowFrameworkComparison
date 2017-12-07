@@ -1,0 +1,117 @@
+import os
+import sys
+import yaml
+
+from snakemake.utils import read_job_properties
+
+jobscript = sys.argv[0]
+job_properties = read_job_properties(jobscript)
+
+print(job_properties)
+
+REFERENCE = config['reference']
+
+READS_DIR = config['reads_dir']
+
+SAMPLES_PE = config['samples_pe'] if "samples_pe" in config else []
+SAMPLES_SE = config['samples_se'] if "samples_se" in config else []
+
+ADAPT_1 = config['adapt1']
+ADAPT_2 = config['adapt2']
+
+STAR_INDEX = "star_index"
+
+with open("cluster.yaml") as yml:
+    cluster = yaml.load(yml)
+
+localrules: all
+
+
+rule all:
+    input:
+        expand("fastqc_pe/{sample}_R1_fastqc.zip", sample=SAMPLES_PE),
+        expand("map/{sample}_Aligned.sortedByCoord.out.bam", sample=SAMPLES_PE),
+        expand("fastqc_se/{sample}_fastqc.zip", sample=SAMPLES_SE),
+        expand("map/{sample}_Aligned.sortedByCoord.out.bam", sample=SAMPLES_SE)
+
+
+rule fastqc_pe:
+    input:
+        r1 = os.path.join(READS_DIR, "{sample}_R1.fastq.gz"),
+        r2 = os.path.join(READS_DIR, "{sample}_R2.fastq.gz")
+    output:
+        "fastqc_pe/{sample}_R1_fastqc.zip"
+    shell:
+        "fastqc -o fastqc_pe {input.r1} {input.r2}"
+
+
+rule fastqc_se:
+    input:
+        r = os.path.join(READS_DIR, "{sample}.fastq.gz")
+    output:
+        "fastqc_se/{sample}_fastqc.zip"
+    shell:
+        "fastqc -o fastqc_se {input.r}"
+
+
+rule cutadapt_se:
+    input:
+        r = os.path.join(READS_DIR, "{sample}.fastq.gz")
+    output:
+        r = os.path.join("cutadapt_se", "{sample}.fastq.gz")
+    shell:
+        "cutadapt -a {ADAPT_1} -o {output.r} {input}"
+
+
+rule cutadapt_pe:
+    input:
+        r1 = os.path.join(READS_DIR, "{sample}_R1.fastq.gz"),
+        r2 = os.path.join(READS_DIR, "{sample}_R2.fastq.gz")
+    output:
+        r1 = os.path.join("cutadapt_pe", "{sample}_R1.fastq.gz"),
+        r2 = os.path.join("cutadapt_pe", "{sample}_R2.fastq.gz")
+    shell:
+        "cutadapt -a {ADAPT_1} -A {ADAPT_2} -o {output.r1} -p {output.r2} {input}"
+
+rule index:
+    input:
+        ref = REFERENCE
+    output:
+        "star_index/Genome",
+        dir = "star_index"
+    params:
+        cpu = cluster["index"]["cpu"]
+    shell:
+        """
+        STAR --runThreadN {params.cpu} --runMode genomeGenerate --genomeDir {output.dir} --genomeFastaFiles {input.ref} \
+        --outFileNamePrefix {output.dir}/
+        """
+
+rule map_pe:
+    input:
+        ref = "star_index" if STAR_INDEX is None else STAR_INDEX,
+        r1 = os.path.join("cutadapt_pe", "{sample}_R1.fastq.gz"),
+        r2 = os.path.join("cutadapt_pe", "{sample}_R2.fastq.gz")
+    output:
+        bam = os.path.join("map", "{sample}_Aligned.sortedByCoord.out.bam")
+    params:
+        cpu = cluster["map_pe"]["cpu"]
+    shell:
+        """
+        STAR --genomeDir {input.ref} --readFilesIn {input.r1} {input.r2} --readFilesCommand zcat \
+        --outFileNamePrefix map/{wildcards.sample}_ --runThreadN {params.cpu} --outSAMtype BAM SortedByCoordinate
+        """
+
+rule map_se:
+    input:
+        ref = "star_index" if STAR_INDEX is None else STAR_INDEX,
+        reads = os.path.join("cutadapt_se", "{sample}.fastq.gz")
+    output:
+        bam = os.path.join("map", "{sample}_Aligned.sortedByCoord.out.bam")
+    params:
+        cpu = cluster["map_se"]["cpu"]
+    shell:
+        """
+        STAR --genomeDir {input.ref} --readFilesIn {input.reads} --readFilesCommand zcat \
+        --outFileNamePrefix map/{wildcards.sample}_ --runThreadN {params.cpu} --outSAMtype BAM SortedByCoordinate
+        """
