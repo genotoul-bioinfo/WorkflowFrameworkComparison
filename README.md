@@ -1,11 +1,11 @@
 # Workflow Framework Comparison
 Here is the repository for hackathon occured at INRA Toulouse on the 29 and 30 of november 2017.
 
-The purpose of this meeting was to test different workflow manager in an **HPC environment**.
+The purpose of this meeting was to test different workflow managers in an **HPC environment**.
 We didn't want to test Cloud and Docker functionalities.
 
 ## People implied (INRA):
- * Estelle Ancellet (MIAT, Record), 
+ * Estelle Ancelet (MIAT, Record), 
  * Philippe Bardou (GenPhySE, Sigenae), 
  * Floréal Cabanettes (MIAT, Bioinfo Genotoul), 
  * Cédric Cabau (GenPhySE, Sigenae), 
@@ -32,7 +32,7 @@ We didn't want to test Cloud and Docker functionalities.
 
 ## Organization
 
-In directory to_start you will find data to start comparison and also the
+In directory to_start you will find data to start comparison and also some
 cwl workflow examples.
 The purpose of the two days is to develop a workflow which perform :
  - fastqc
@@ -67,7 +67,7 @@ _If you want to add your tool or your feedback, please ask for access to celine.
 ## Conclusion
 
 After 2 days:
-- we tried to test : Rabix, toil, pegasus without success.
+- we tried to test : Rabix, toil, pegasus without success regarding our infrastruture.
 - 2 workflow managers stand out : NextFlow and Snakemake ( not a surprise ).
 The caracteristics and the ease of coding are really similar.
 The main problem on nextflow is the memory needed by master job (50G of virtual mem not enougth!).
