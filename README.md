@@ -33,8 +33,8 @@ We didn't want to test Cloud and Docker functionalities.
 
 ## Organization
 
-In directory to_start you will find data to start comparison and also some
-cwl workflow examples.
+In directory to_start you will find data and some CWL workflow examples.
+
 The purpose of the two days is to develop a workflow which perform :
  - fastqc
  - cutadapt
@@ -63,11 +63,12 @@ Things to identify when testing managers:
 
 ## Comparison sheet
 Read only [Comparison sheet](https://docs.google.com/spreadsheets/d/1Iss0BYVrhS6-pWg16cWyN-yGUUQjGaKvEqAas_VEn64/edit?usp=sharing)
+
 _If you want to add your tool or your feedback, please ask for access to celine.noirot@inra.fr._
 
 ## Conclusion
 
-After 2 days:
+**After 2 days:**
 - we tried to test : Rabix, toil, pegasus without success regarding our infrastruture.
 - 2 workflow managers stand out : NextFlow and Snakemake ( not a surprise ).
 
@@ -75,7 +76,7 @@ The caracteristics and the ease of coding are really similar.
 The main problem on nextflow is the memory needed by master job (50G of virtual mem not enougth!).
 On Snakemake it seems not to be as easy as on nextflow to use memory and cpu parameter in a rule/process.
 
-Global comparison ([here is a comparison of 06/2016](https://jmazz.me/blog/NGS-Workflows))
+**Global comparison** ([here is a comparison of 06/2016](https://jmazz.me/blog/NGS-Workflows))
 
 | Atout/Inconv      |    Snakemake  |   Nextflow      |
 | ------------- | -------------   | ---------      |
@@ -88,8 +89,11 @@ Global comparison ([here is a comparison of 06/2016](https://jmazz.me/blog/NGS-W
 
 For more details on evaluated caracteristics check the [Comparison sheet](https://docs.google.com/spreadsheets/d/1Iss0BYVrhS6-pWg16cWyN-yGUUQjGaKvEqAas_VEn64/edit?usp=sharing) and the contents of directories in comparison.
 
-Et CWL dans tout ca ? 
-A l'implementation de CWL est vraiment bien pensée en particulier pour la parallelisation des tâches, merge des taches, intégration de sous workflow. Mais besoin de javascript pour faire le liant entre les steps ou gérer les conditions.
+**Et CWL dans tout ca ?**
+
+L'implementation de CWL est vraiment bien pensée en particulier pour la parallelisation des tâches, merge des taches parallélisées, intégration de sous workflow. 
+Mais il faut utiliser javascript pour faire le liant entre les steps ou gérer les conditions.
+
 Le problème c'est que lorsque l'on a choisi un gestionnaire de workflow, on code directement ds le language / format attendu par le gestionnaire. 
 Donc soit les gestionnaires se mettent à lire le CWL soit les bioinformaticiens devront coder dans deux languages ... j'en doute.
 
